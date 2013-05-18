@@ -65,4 +65,6 @@ can go back to it.")
   (interactive)
   (set-frame-parameter nil 'fullscreen windowed-frame-state))
 
+
+(provide 'fullscreen)
 ;;; fullscreen.el ends here
