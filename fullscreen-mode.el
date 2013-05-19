@@ -44,13 +44,13 @@ can go back to it.")
 (defun fullscreen-toggle ()
   "Toggles the frame's fullscreen state"
   (interactive)
-  (if (fullscreen?)
+  (if (fullscreen-p)
       (windowed)
     (fullscreen)))
 
 (global-set-key [f11] 'fullscreen-toggle)
 
-(defun fullscreen? ()
+(defun fullscreen-p ()
   "Predicate for fullscreen frame parameter being set to 'fullboth"
   (equal (frame-parameter nil 'fullscreen) 'fullboth))
 
@@ -63,8 +63,8 @@ can go back to it.")
 (defun windowed ()
   "Set frame's fullscreen parameter back to it's previous windowed state"
   (interactive)
-  (set-frame-parameter nil 'fullscreen windowed-frame-state))
+  (set-frame-parameter nil 'fullscreen windowed-frame-state)
 
 
-(provide 'fullscreen)
+  (provide 'fullscreen))
 ;;; fullscreen.el ends here
