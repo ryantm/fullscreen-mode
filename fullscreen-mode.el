@@ -1,16 +1,21 @@
-;;; fullscreen.el --- fullscreen window support for Emacs
+;;; fullscreen-mode.el --- fullscreen window support for Emacs
 
 ;; Author: Ryan Mulligan <ryan@ryantm.com>
-;; URL: https://github.com/ryantm/fullscreen
+;; URL: https://github.com/ryantm/fullscreen-mode
 ;; Version: 0.0.1
-;; Keywords: fullscreen
+;; Keywords: fullscreen, fullscreen-mode
 
 ;; This file is not part of GNU Emacs.
 
 ;;; Commentary:
 
-;; Provides fullscreen-toggle, bound to F11 that toggles the frame between
-;; fullscreen and windowed.
+;; Initially-on global minor mode that provides fullscreen-toggle,
+;; which toggles the frame between fullscreen and windowed.
+;; fullscreen-toggle is bound to F11.
+;;
+;; Usage:
+;;  (package-install 'fullscreen-mode)
+;;  (require 'fullscreen-mode)
 
 ;;; License:
 
@@ -23,32 +28,25 @@
 ;; but WITHOUT ANY WARRANTY; without even the implied warranty of
 ;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;; GNU General Public License for more details.
-;;
-;; You should have received a copy of the GNU General Public License
-;; along with GNU Emacs; see the file COPYING.  If not, write to the
-;; Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
-;; Boston, MA 02110-1301, USA.
 
 ;;; Code:
-
-(defvar windowed-frame-state (frame-parameter nil 'fullscreen)
+(defvar fullscreen-windowed-frame-state (make-hash-table :weakness 'key)
   "State of the frame-parameter for the nil frame. Stored so fullscreen-toggle
 can go back to it.")
 
-(defun save-windowed-frame-state ()
-  "Save windowed-frame-state with the current frame-parameter state"
+(defun fullscreen-windowed-frame-state-update ()
+  "Save fullscreen-windowed-frame-state with the current frame-parameter state"
   (let ((fullscreen-frame-parameter (frame-parameter nil 'fullscreen)))
     (if (not (equal fullscreen-frame-parameter 'fullboth))
-      (setq windowed-frame-state fullscreen-frame-parameter))))
+        (puthash
+         (selected-frame)
+         fullscreen-frame-parameter
+         fullscreen-windowed-frame-state))))
 
-(defun fullscreen-toggle ()
-  "Toggles the frame's fullscreen state"
-  (interactive)
-  (if (fullscreen-p)
-      (windowed)
-    (fullscreen)))
-
-(global-set-key [f11] 'fullscreen-toggle)
+(defun fullscreen-windowed-frame-state-restore ()
+  "Restore the frame-parameter stored in fullscreen-windowed-frame-state"
+  (let ((fullscreen-frame-parameter (gethash (selected-frame) fullscreen-windowed-frame-state)))
+    (set-frame-parameter nil 'fullscreen fullscreen-frame-parameter)))
 
 (defun fullscreen-p ()
   "Predicate for fullscreen frame parameter being set to 'fullboth"
@@ -57,14 +55,33 @@ can go back to it.")
 (defun fullscreen ()
   "Sets frame's fullscreen parameter to fullboth"
   (interactive)
-  (save-windowed-frame-state)
+  (fullscreen-windowed-frame-state-update)
   (set-frame-parameter nil 'fullscreen 'fullboth))
 
-(defun windowed ()
+(defun fullscreen-windowed ()
   "Set frame's fullscreen parameter back to it's previous windowed state"
   (interactive)
-  (set-frame-parameter nil 'fullscreen windowed-frame-state)
+  (fullscreen-windowed-frame-state-restore))
 
+(defun fullscreen-toggle ()
+  "Toggles the frame's fullscreen state"
+  (interactive)
+  (if (fullscreen-p)
+      (fullscreen-windowed)
+    (fullscreen)))
 
-  (provide 'fullscreen))
-;;; fullscreen.el ends here
+(defvar fullscreen-mode-keymap
+  "fullscreen minor mode keymap binds F11 to fullscreen-toggle")
+(setq fullscreen-mode-keymap
+      (let ((map (make-sparse-keymap)))
+        (define-key map (kbd "<f11>") 'fullscreen-toggle)
+        map))
+
+(define-minor-mode fullscreen-mode
+  " Provides fullscreen-mode-toggle, bound to F11 that toggles the frame between fullscreen and windowed."
+  :init-value t
+  :global t
+  :keymap fullscreen-mode-keymap)
+
+(provide 'fullscreen-mode)
+;;; fullscreen-mode.el ends here
