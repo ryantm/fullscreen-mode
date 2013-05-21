@@ -1,21 +1,22 @@
 ;;; fullscreen-mode.el --- fullscreen window support for Emacs
 
 ;; Author: Ryan Mulligan <ryan@ryantm.com>
-;; URL: https://github.com/ryantm/fullscreen-mode
 ;; Version: 0.0.1
+;; URL: https://github.com/ryantm/fullscreen-mode
 ;; Keywords: fullscreen, fullscreen-mode
 
 ;; This file is not part of GNU Emacs.
+
+;;; Install:
+
+;;  (package-install 'fullscreen-mode)
+;;  (auto-load 'fullscreen-mode)
 
 ;;; Commentary:
 
 ;; Initially-on global minor mode that provides fullscreen-toggle,
 ;; which toggles the frame between fullscreen and windowed.
 ;; fullscreen-toggle is bound to F11.
-;;
-;; Usage:
-;;  (package-install 'fullscreen-mode)
-;;  (require 'fullscreen-mode)
 
 ;;; License:
 
