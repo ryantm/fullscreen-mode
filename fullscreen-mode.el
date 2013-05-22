@@ -32,8 +32,8 @@
 
 ;;; Code:
 (defvar fullscreen-windowed-frame-state (make-hash-table :weakness 'key)
-  "State of the frame-parameter for the nil frame. Stored so fullscreen-toggle
-can go back to it.")
+  "Hash keyed by frames with the value of the fullscreen frame parameter before going to fullscreen.
+ Stored so fullscreen-toggle can go back to it.")
 
 (defun fullscreen-windowed-frame-state-update ()
   "Save fullscreen-windowed-frame-state with the current frame-parameter state"
@@ -53,17 +53,20 @@ can go back to it.")
   "Predicate for fullscreen frame parameter being set to 'fullboth"
   (equal (frame-parameter nil 'fullscreen) 'fullboth))
 
+;;;###autoload
 (defun fullscreen ()
   "Sets frame's fullscreen parameter to fullboth"
   (interactive)
   (fullscreen-windowed-frame-state-update)
   (set-frame-parameter nil 'fullscreen 'fullboth))
 
+;;;###autoload
 (defun fullscreen-windowed ()
   "Set frame's fullscreen parameter back to it's previous windowed state"
   (interactive)
   (fullscreen-windowed-frame-state-restore))
 
+;;;###autoload
 (defun fullscreen-toggle ()
   "Toggles the frame's fullscreen state"
   (interactive)
@@ -71,18 +74,23 @@ can go back to it.")
       (fullscreen-windowed)
     (fullscreen)))
 
-(defvar fullscreen-mode-keymap
+;;;###autoload
+(defvar fullscreen-mode-map
+  (make-sparse-keymap)
   "fullscreen minor mode keymap binds F11 to fullscreen-toggle")
-(setq fullscreen-mode-keymap
-      (let ((map (make-sparse-keymap)))
-        (define-key map (kbd "<f11>") 'fullscreen-toggle)
-        map))
 
+;;;###autoload
+(define-key fullscreen-mode-map (kbd "<f11>") 'fullscreen-toggle)
+
+;;;###autoload
+(add-to-list 'minor-mode-map-alist `(fullscreen-mode . ,fullscreen-mode-map) t)
+
+;;;###autoload
 (define-minor-mode fullscreen-mode
   " Provides fullscreen-mode-toggle, bound to F11 that toggles the frame between fullscreen and windowed."
   :init-value t
   :global t
-  :keymap fullscreen-mode-keymap)
+  :keymap fullscreen-mode-map)
 
 (provide 'fullscreen-mode)
 ;;; fullscreen-mode.el ends here
