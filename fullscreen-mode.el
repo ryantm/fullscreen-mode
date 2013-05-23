@@ -10,7 +10,6 @@
 ;;; Install:
 
 ;;  (package-install 'fullscreen-mode)
-;;  (auto-load 'fullscreen-mode)
 
 ;;; Commentary:
 
