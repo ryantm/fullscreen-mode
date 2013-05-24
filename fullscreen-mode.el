@@ -13,9 +13,10 @@
 
 ;;; Commentary:
 
-;; Initially-on global minor mode that provides fullscreen-toggle,
+;; Initially-on global minor mode that provides
+;; `fullscreen-mode-fullscreen-toggle',
 ;; which toggles the frame between fullscreen and windowed.
-;; fullscreen-toggle is bound to F11.
+;; `fullscreen-mode-fullscreen-toggle' is bound to F11.
 
 ;;; License:
 
@@ -75,7 +76,7 @@
 
 (defvar fullscreen-mode-map
   (let ((m (make-sparse-keymap)))
-    (define-key m (kbd "<f11>") 'fullscreen-toggle)
+    (define-key m (kbd "<f11>") 'fullscreen-mode-fullscreen-toggle)
     m)
   "Keymap for `fullscreen-mode'.")
 
