@@ -30,63 +30,58 @@
 ;; GNU General Public License for more details.
 
 ;;; Code:
-(defvar fullscreen-windowed-frame-state (make-hash-table :weakness 'key)
+(defvar fullscreen-mode-windowed-frame-state (make-hash-table :weakness 'key)
   "Hash keyed by frames with the value of the fullscreen frame parameter before going to fullscreen.
- Stored so fullscreen-toggle can go back to it.")
+ Stored so fullscreen-mode-toggle can go back to it.")
 
-(defun fullscreen-windowed-frame-state-update ()
+(defun fullscreen-mode-windowed-frame-state-update ()
   "Save fullscreen-windowed-frame-state with the current frame-parameter state"
   (let ((fullscreen-frame-parameter (frame-parameter nil 'fullscreen)))
     (if (not (equal fullscreen-frame-parameter 'fullboth))
         (puthash
          (selected-frame)
          fullscreen-frame-parameter
-         fullscreen-windowed-frame-state))))
+         fullscreen-mode-windowed-frame-state))))
 
-(defun fullscreen-windowed-frame-state-restore ()
+(defun fullscreen-mode-windowed-frame-state-restore ()
   "Restore the frame-parameter stored in fullscreen-windowed-frame-state"
-  (let ((fullscreen-frame-parameter (gethash (selected-frame) fullscreen-windowed-frame-state)))
+  (let ((fullscreen-frame-parameter (gethash (selected-frame) fullscreen-mode-windowed-frame-state)))
     (set-frame-parameter nil 'fullscreen fullscreen-frame-parameter)))
 
-(defun fullscreen-p ()
+(defun fullscreen-mode-fullscreen-p ()
   "Predicate for fullscreen frame parameter being set to 'fullboth"
   (equal (frame-parameter nil 'fullscreen) 'fullboth))
 
 ;;;###autoload
-(defun fullscreen ()
+(defun fullscreen-mode-fullscreen ()
   "Sets frame's fullscreen parameter to fullboth"
   (interactive)
-  (fullscreen-windowed-frame-state-update)
+  (fullscreen-mode-windowed-frame-state-update)
   (set-frame-parameter nil 'fullscreen 'fullboth))
 
 ;;;###autoload
-(defun fullscreen-windowed ()
+(defun fullscreen-mode-windowed ()
   "Set frame's fullscreen parameter back to it's previous windowed state"
   (interactive)
-  (fullscreen-windowed-frame-state-restore))
+  (fullscreen-mode-windowed-frame-state-restore))
 
 ;;;###autoload
-(defun fullscreen-toggle ()
+(defun fullscreen-mode-fullscreen-toggle ()
   "Toggles the frame's fullscreen state"
   (interactive)
-  (if (fullscreen-p)
-      (fullscreen-windowed)
-    (fullscreen)))
+  (if (fullscreen-mode-fullscreen-p)
+      (fullscreen-mode-windowed)
+    (fullscreen-mode-fullscreen)))
 
-;;;###autoload
 (defvar fullscreen-mode-map
-  (make-sparse-keymap)
-  "fullscreen minor mode keymap binds F11 to fullscreen-toggle")
-
-;;;###autoload
-(define-key fullscreen-mode-map (kbd "<f11>") 'fullscreen-toggle)
-
-;;;###autoload
-(add-to-list 'minor-mode-map-alist `(fullscreen-mode . ,fullscreen-mode-map) t)
+  (let ((m (make-sparse-keymap)))
+    (define-key m (kbd "<f11>") 'fullscreen-toggle)
+    m)
+  "Keymap for `fullscreen-mode'.")
 
 ;;;###autoload
 (define-minor-mode fullscreen-mode
-  " Provides fullscreen-mode-toggle, bound to F11 that toggles the frame between fullscreen and windowed."
+  "Provides fullscreen-mode-toggle, bound to F11 that toggles the frame between fullscreen and windowed."
   :init-value t
   :global t
   :keymap fullscreen-mode-map)
