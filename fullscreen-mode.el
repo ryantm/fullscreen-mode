@@ -9,11 +9,15 @@
 
 ;;; Install:
 
-;;  (package-install 'fullscreen-mode)
+;; Install package
+;; (package-install 'fullscreen-mode)
+;;
+;; Enable minor mode
+;; (fullscreen-mode 1)
 
 ;;; Commentary:
 
-;; Initially-on global minor mode that provides
+;; Global minor mode that provides
 ;; `fullscreen-mode-fullscreen-toggle',
 ;; which toggles the frame between fullscreen and windowed.
 ;; `fullscreen-mode-fullscreen-toggle' is bound to F11.
@@ -83,7 +87,6 @@
 ;;;###autoload
 (define-minor-mode fullscreen-mode
   "Provides fullscreen-mode-toggle, bound to F11 that toggles the frame between fullscreen and windowed."
-  :init-value t
   :global t
   :keymap fullscreen-mode-map)
 
